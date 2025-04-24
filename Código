@@ -1,0 +1,33 @@
+{Código de detecção de objeto com Arduino}]
+// Declarações de variáveis
+const int sensorPin = 2;            // Pino onde o sensor esta conectado
+unsigned long tempoInicio = 0;      // Variavel para armazenar o tempo inicial
+unsigned long tempoFim = 0;         // Variavel para armazenar o tempo final
+bool objetoDetectado = false;       // Flag para indicar se o objeto foi detectado
+
+void setup() {
+  Serial.begin(9600);               // Inicializa a comunicação serial com o monitor serial
+  pinMode(sensorPin, INPUT);        // Configura o pino do sensor como entrada
+}
+
+void loop() {
+  int leituraSensor = digitalRead(sensorPin);  // Lê o valor do sensor (0 ou 1)
+  
+  // Quando o objeto é detectado pela primeira vez
+  if (leituraSensor == LOW && !objetoDetectado) {
+    tempoInicio = millis();        // Registra o tempo inicial
+    objetoDetectado = true;        // Define que o objeto foi detectado
+    Serial.println("Objeto detectado!");
+  }
+  
+  // Quando o objeto sai da frente do sensor
+  if (leituraSensor == HIGH && objetoDetectado) {
+    tempoFim = millis();           // Registra o tempo final
+    unsigned long tempoVariacao = tempoFim - tempoInicio;  // Calcula o tempo de variacao
+    Serial.print("Tempo de passagem: ");
+    Serial.print(tempoVariacao);    // Exibe o tempo de passagem no monitor serial
+    Serial.println(" ms");
+    
+    objetoDetectado = false;       // Redefine para aguardar uma nova deteccao
+  }
+}
